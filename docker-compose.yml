@@ -1,0 +1,97 @@
+services:
+
+  config1:
+    image: mongo
+    command: mongod --configsvr --replSet cfgrs --port 27017
+    ports:
+      - 10001:27017
+    volumes:
+      - ./data/config1:/data/db
+    profiles:
+      - config
+
+  config2:
+    image: mongo
+    command: mongod --configsvr --replSet cfgrs --port 27017
+    ports:
+      - 10002:27017
+    volumes:
+      - ./data/config2:/data/db
+    profiles:
+      - config
+
+  config3:
+    image: mongo
+    command: mongod --configsvr --replSet cfgrs --port 27017
+    ports:
+      - 10003:27017
+    volumes:
+      - ./data/config3:/data/db
+    profiles:
+      - config
+
+  shard1s1:
+    image: mongo
+    command: mongod --shardsvr --replSet shard1rs --port 27017
+    ports:
+      - 20001:27017
+    volumes:
+      - ./data/shard1s1:/data/db
+    profiles:
+      - shards
+
+  shard1s2:
+    image: mongo
+    command: mongod --shardsvr --replSet shard1rs --port 27017
+    ports:
+      - 20002:27017
+    volumes:
+      - ./data/shard1s2:/data/db
+    profiles:
+      - shards
+
+  shard1s3:
+    image: mongo
+    command: mongod --shardsvr --replSet shard1rs --port 27017
+    ports:
+      - 20003:27017
+    volumes:
+      - ./data/shard1s3:/data/db
+    profiles:
+      - shards
+
+  shard2s1:
+    image: mongo
+    command: mongod --shardsvr --replSet shard2rs --port 27017
+    ports:
+      - 20004:27017
+    volumes:
+      - ./data/shard2s1:/data/db
+    profiles:
+      - shards
+
+  shard2s2:
+    image: mongo
+    command: mongod --shardsvr --replSet shard2rs --port 27017
+    ports:
+      - 20005:27017
+    volumes:
+      - ./data/shard2s2:/data/db
+    profiles:
+      - shards
+
+  shard2s3:
+    image: mongo
+    command: mongod --shardsvr --replSet shard2rs --port 27017
+    ports:
+      - 20006:27017
+    volumes:
+      - ./data/shard2s3:/data/db
+    profiles:
+      - shards
+
+  mongos:
+    build: .
+    ports:
+      - 30000:27017
+    profiles: [mongos]
