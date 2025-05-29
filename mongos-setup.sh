@@ -147,6 +147,32 @@ else
   echo "shard2rs is present"
 fi
 
+echo "Checking if testing data is present..."
+
+if ! mongosh --quiet --port 27018 --eval "show databases;" | grep -q "testing_db"; then
+  echo "No testing data. Initializing shard configurations..."
+
+  mongosh --quiet --port 27018 --eval '
+    console.log("Enabling sharding on testing_db...");
+    sh.enableSharding("testing_db");
+    
+    console.log("Sharding orders collection...");
+    sh.shardCollection("testing_db.orders", { address: "hashed" });
+  '
+
+  echo "Shards configured. Importing testing data..."
+
+  mongoimport --uri mongodb://127.0.0.1:27018 --db testing_db \
+    --collection products --file /testing_data/products.json --jsonArray
+  mongoimport --uri mongodb://127.0.0.1:27018 --db testing_db \
+    --collection orders --file /testing_data/orders.json --jsonArray
+  mongoimport --uri mongodb://127.0.0.1:27018 --db testing_db \
+    --collection reviews --file /testing_data/reviews.json --jsonArray
+
+  echo "Successfully added testing data to database."
+
+fi
+
 echo "Restarting mongos on public port..."
 kill $MONGOS_PID
 wait $MONGOS_PID 2>/dev/null || true

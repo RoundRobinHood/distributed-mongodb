@@ -95,3 +95,5 @@ services:
     ports:
       - 30000:27017
     profiles: [mongos]
+    volumes:
+      - ./testing_data:/testing_data:ro

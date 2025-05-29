@@ -1,0 +1,154 @@
+[
+  {
+    "_id": {
+      "$oid": "683821113de6cad4a1aa2718"
+    },
+    "orderDate": {
+      "$date": "2024-08-06T15:04:48.954Z"
+    },
+    "email": "davidhobbs@example.org",
+    "cart": [
+      {
+        "product": {
+          "$oid": "6838210f3de6cad4a1aa2701"
+        },
+        "amount": 1,
+        "price": {
+          "$numberDecimal": "234.02"
+        }
+      }
+    ],
+    "address": "8743 Bell Union Apt. 660, East Jorgehaven, WY 26257",
+    "paid": {
+      "$numberDecimal": "234.02"
+    },
+    "status": "shipped"
+  },
+  {
+    "_id": {
+      "$oid": "683821113de6cad4a1aa2719"
+    },
+    "orderDate": {
+      "$date": "2025-04-24T11:20:23.766Z"
+    },
+    "email": "suzannemiller@example.org",
+    "cart": [
+      {
+        "product": {
+          "$oid": "6838210a3de6cad4a1aa26fc"
+        },
+        "amount": 5,
+        "price": {
+          "$numberDecimal": "849.18"
+        }
+      }
+    ],
+    "address": "USS Dickson, FPO AP 68085",
+    "paid": {
+      "$numberDecimal": "4245.9"
+    },
+    "status": "cancelled"
+  },
+  {
+    "_id": {
+      "$oid": "683821113de6cad4a1aa271a"
+    },
+    "orderDate": {
+      "$date": "2024-09-01T01:42:55.562Z"
+    },
+    "email": "murrayjames@example.com",
+    "cart": [
+      {
+        "product": {
+          "$oid": "6838210c3de6cad4a1aa26fe"
+        },
+        "amount": 1,
+        "price": {
+          "$numberDecimal": "552.08"
+        }
+      },
+      {
+        "product": {
+          "$oid": "6838210a3de6cad4a1aa26fc"
+        },
+        "amount": 1,
+        "price": {
+          "$numberDecimal": "849.18"
+        }
+      }
+    ],
+    "address": "8004 Shannon Glens Apt. 971, Port Christopherfurt, MS 77585",
+    "paid": {
+      "$numberDecimal": "1401.26"
+    },
+    "status": "shipped"
+  },
+  {
+    "_id": {
+      "$oid": "683821113de6cad4a1aa271b"
+    },
+    "orderDate": {
+      "$date": "2025-01-17T22:40:47.063Z"
+    },
+    "email": "jennifersantos@example.org",
+    "cart": [
+      {
+        "product": {
+          "$oid": "683821113de6cad4a1aa2703"
+        },
+        "amount": 4,
+        "price": {
+          "$numberDecimal": "590.24"
+        }
+      },
+      {
+        "product": {
+          "$oid": "683821103de6cad4a1aa2702"
+        },
+        "amount": 2,
+        "price": {
+          "$numberDecimal": "60.7"
+        }
+      },
+      {
+        "product": {
+          "$oid": "6838210a3de6cad4a1aa26fc"
+        },
+        "amount": 1,
+        "price": {
+          "$numberDecimal": "849.18"
+        }
+      }
+    ],
+    "address": "8949 Foster Trail, South Kathyborough, IA 16277",
+    "paid": {
+      "$numberDecimal": "3331.54"
+    },
+    "status": "pending"
+  },
+  {
+    "_id": {
+      "$oid": "683821113de6cad4a1aa271c"
+    },
+    "orderDate": {
+      "$date": "2025-03-31T14:52:15.665Z"
+    },
+    "email": "ian36@example.com",
+    "cart": [
+      {
+        "product": {
+          "$oid": "6838210c3de6cad4a1aa26fe"
+        },
+        "amount": 5,
+        "price": {
+          "$numberDecimal": "552.08"
+        }
+      }
+    ],
+    "address": "71549 Keith Greens, Hawkinsbury, RI 65013",
+    "paid": {
+      "$numberDecimal": "2760.4"
+    },
+    "status": "pending"
+  }
+]
