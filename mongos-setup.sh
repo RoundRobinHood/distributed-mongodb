@@ -117,7 +117,9 @@ wait_for_primary "${SHARD2_HOSTS[@]}"
 
 echo "Temporarily starting mongos..."
 
-mongos --configdb cfgrs/config1:27017,config2:27017,config3:27017 --port 27018 >/dev/null &
+touch /mongos.log
+
+mongos --configdb cfgrs/config1:27017,config2:27017,config3:27017 --logpath /mongos.log --port 27018 >/dev/null &
 MONGOS_PID=$!
 
 until mongosh --port 27018 --eval "sh.status()" --quiet; do
@@ -172,6 +174,72 @@ if ! mongosh --quiet --port 27018 --eval "show databases;" | grep -q "testing_db
   echo "Successfully added testing data to database."
 
 fi
+
+echo "Running performance tests on mongos..."
+
+TEST_SCRIPT=$(cat <<'EOF'
+const db = connect("mongodb://localhost:27018/testing_db");
+
+function hrtimeMs(hr) {
+  return (hr[0] * 1000) + (hr[1] / 1e6);
+}
+
+function benchmark(opName, fn) {
+  const start = process.hrtime();
+  const result = fn();
+  const duration = hrtimeMs(process.hrtime(start));
+  console.log(`${opName} took ${duration.toFixed(2)}ms`);
+  return result;
+}
+
+console.log("=== Collection Stats ===");
+["products", "orders", "reviews"].forEach(col => {
+  const stats = db.getCollection(col).stats();
+  console.log({
+    collection: col,
+    count: stats.count,
+    sizeMB: (stats.size / (1024*1024)).toFixed(2),
+    storageMB: (stats.storageSize / (1024*1024)).toFixed(2),
+    indexMB: (stats.totalIndexSize / (1024*1024)).toFixed(2)
+  });
+});
+
+console.log("=== Benchmarks ===");
+
+// Read latency
+benchmark("Simple read", () => db.products.findOne());
+
+// Write latency
+benchmark("Simple write", () => db.reviews.insertOne({
+  product: db.products.findOne()._id,
+  email: "test@example.com",
+  rating: 4,
+  reviewText: "Load test entry"
+}));
+
+// Find + Sort
+benchmark("Sorted read", () => db.products.find().sort({ averageRating: -1 }).limit(10).toArray());
+
+// Count documents
+benchmark("Count documents in orders", () => db.orders.countDocuments());
+
+// Optional: Index usage info (might be empty if not used yet)
+console.log("=== Index Stats ===");
+["products", "orders", "reviews"].forEach(col => {
+  console.log(`${col} index stats:`);
+  try {
+    const stats = db.getCollection(col).aggregate([
+      { $indexStats: {} }
+    ]);
+    stats.forEach(stat => console.log(stat));
+  } catch (e) {
+    console.log(`  Error collecting indexStats: ${e.message}`);
+  }
+});
+EOF
+)
+
+mongosh --quiet --port 27018 --eval "$TEST_SCRIPT"
 
 echo "Restarting mongos on public port..."
 kill $MONGOS_PID
