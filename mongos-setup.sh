@@ -2,6 +2,20 @@
 
 set -euo pipefail
 
+wait_for_primary() {
+  local servers=("$@")
+
+  while true; do
+    for server in "${servers[@]}"; do
+      if mongosh --host "$server" --quiet --eval 'db.hello().isWritablePrimary' | grep -q true; then
+        echo "Primary found on $server"
+        return 0
+      fi
+    done
+    sleep 1
+  done
+}
+
 wait_for_hosts() {
   local hosts=("$@")
   local pids=()
@@ -85,11 +99,25 @@ mongosh --eval 'rs.status().ok' --host shard2s1 2>/dev/null || mongosh --host sh
   });
 '
 
-echo "All shards and config servers set up."
+echo "All shards and config server setup executed."
+
+echo "Waiting for replica set primaries..."
+
+echo "Waiting for cfgrs primary..."
+
+wait_for_primary "${CONFIG_HOSTS[@]}"
+
+echo "Waiting for shard1rs primary..."
+
+wait_for_primary "${SHARD1_HOSTS[@]}"
+
+echo "Waiting for shard2rs primary..."
+
+wait_for_primary "${SHARD2_HOSTS[@]}"
 
 echo "Temporarily starting mongos..."
 
-mongos --configdb cfgrs/config1:27017,config2:27017,config3:27017 --port 27018 &
+mongos --configdb cfgrs/config1:27017,config2:27017,config3:27017 --port 27018 >/dev/null &
 MONGOS_PID=$!
 
 until mongosh --port 27018 --eval "sh.status()" --quiet; do
